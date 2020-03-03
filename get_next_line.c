@@ -42,7 +42,6 @@ int	ft_newline(char **str, char **line, int i)
 
 int	ft_endoffile(char **str, char **line)
 {
-
 	if (*str)
 	{
 		*line = ft_strdup(*str);
@@ -57,33 +56,34 @@ int	ft_endoffile(char **str, char **line)
 
 int get_next_line(int fd, char **line)
 {
-	char		buffer[BUFFER_SIZE + 1];
-	static char *str;
+	char		*buffer;
+	static char *str[OPEN_MAX];
 	int			ret;
 	char		*aux;
 	int			posit;
 
-	if (fd < 0 || !*line || BUFFER_SIZE < 1)
+	if (fd < 0 || !line || BUFFER_SIZE < 1)
 		return (-1);
-	if (str && (posit = ft_breakline(str, '\n')) != -1)
-		return (ft_newline(&str, line, posit));
+	if (!(buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1))))
+		return (-1);
+	if (str[fd] && (posit = ft_breakline(str[fd], '\n')) != -1)
+		return (ft_newline(&str[fd], line, posit));
 	while ((ret = read(fd, buffer, BUFFER_SIZE)) > 0)
 	{
 		buffer[ret] = '\0';
-		if (!str)
-			str = ft_strdup(buffer);
+		if (!str[fd])
+			str[fd] = ft_strdup(buffer);
 		else
 		{
-			aux = ft_strjoin(str, buffer);
-			free(str);
-			str = aux;
+			aux = ft_strjoin(str[fd], buffer);
+			free(str[fd]);
+			str[fd] = aux;
 		}
-		if ((posit = ft_breakline(str, '\n')) != -1)
-			return (ft_newline(&str, line, posit));
+		if ((posit = ft_breakline(str[fd], '\n')) != -1)
+			return (ft_newline(&str[fd], line, posit));
 	}
-	return (ft_endoffile(&str, line));
+	return (ft_endoffile(&str[fd], line));
 }
-
 
 /*
  fd retorno do open

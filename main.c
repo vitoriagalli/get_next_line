@@ -20,9 +20,11 @@ int main (void)
 	int ret;
 	char *line;
 
-	fd = open("teste1", O_RDONLY);
+	fd = open("1.txt", O_RDONLY);
 	while ((ret = get_next_line(fd, &line)) == 1)
 		printf("%s\nreturn %i\n\n", line, ret);
+	if (ret == 0)
+		printf("%s\nreturn %i\n", line, ret);
 }
 
 
@@ -71,4 +73,24 @@ int main ()
 		printf("%s\nreturn %i\n", line, ret);
 
 
-}*/
+}
+
+int main (void)
+{
+	int fd1;
+	int fd2;
+	char *line;
+
+	fd1 = open("teste1", O_RDONLY);
+	fd2 = open("teste2", O_RDONLY);
+	get_next_line(fd1, &line);
+	printf("%s\n", line);
+	get_next_line(fd2, &line);
+	printf("%s\n", line);
+	get_next_line(fd1, &line);
+	printf("%s\n", line);
+
+}
+
+
+*/
