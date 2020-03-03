@@ -62,7 +62,7 @@ int get_next_line(int fd, char **line)
 	char		*aux;
 	int			posit;
 
-	if (fd < 0 || !line || BUFFER_SIZE < 1)
+	if (fd < 0 || !line || BUFFER_SIZE < 1 || read(fd, NULL, 0) < 0)
 		return (-1);
 	if (!(buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1))))
 		return (-1);
@@ -84,6 +84,7 @@ int get_next_line(int fd, char **line)
 	}
 	return (ft_endoffile(&str[fd], line));
 }
+
 
 /*
  fd retorno do open
