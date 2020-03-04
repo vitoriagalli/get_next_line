@@ -6,7 +6,7 @@
 /*   By: vscabell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/12 08:37:34 by vscabell          #+#    #+#             */
-/*   Updated: 2020/02/18 17:35:37 by vscabell         ###   ########.fr       */
+/*   Updated: 2020/03/04 12:51:58 by vscabell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,23 +24,25 @@ int	ft_breakline(char *str, char c)
 	return (i);
 }
 
-int	ft_newline(char **str, char **line, int i)
+int	ft_newline(char **str, char **line, int i, char *buffer)
 {
 	char *aux;
 
 	*line = ft_substr(*str, 0, i);
 	aux = ft_substr(*str, i + 1, ft_strlen(*str) - i);
-	free (*str);
+	free(*str);
 	*str = aux;
 	if (*str && *str[0] == '\0')
 	{
 		free(*str);
 		*str = NULL;
 	}
+	free(buffer);
+	buffer = NULL;
 	return (1);
 }
 
-int	ft_endoffile(char **str, char **line)
+int	ft_endoffile(char **str, char **line, char *buffer)
 {
 	if (*str)
 	{
@@ -50,11 +52,12 @@ int	ft_endoffile(char **str, char **line)
 	}
 	else
 		*line = ft_strdup("");
+	free(buffer);
+	buffer = NULL;
 	return (0);
 }
 
-
-int get_next_line(int fd, char **line)
+int	get_next_line(int fd, char **line)
 {
 	char		*buffer;
 	static char *str[OPEN_MAX];
@@ -67,7 +70,7 @@ int get_next_line(int fd, char **line)
 	if (!(buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1))))
 		return (-1);
 	if (str[fd] && (posit = ft_breakline(str[fd], '\n')) != -1)
-		return (ft_newline(&str[fd], line, posit));
+		return (ft_newline(&str[fd], line, posit, buffer));
 	while ((ret = read(fd, buffer, BUFFER_SIZE)) > 0)
 	{
 		buffer[ret] = '\0';
@@ -80,19 +83,7 @@ int get_next_line(int fd, char **line)
 			str[fd] = aux;
 		}
 		if ((posit = ft_breakline(str[fd], '\n')) != -1)
-			return (ft_newline(&str[fd], line, posit));
+			return (ft_newline(&str[fd], line, posit, buffer));
 	}
-	return (ft_endoffile(&str[fd], line));
+	return (ft_endoffile(&str[fd], line, buffer));
 }
-
-
-/*
- fd retorno do open
- -1 erro
- 0
- 1
- 2
- 3 começa a enumerar os arquivos daqui por diante
- */
-
-

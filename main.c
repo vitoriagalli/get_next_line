@@ -6,7 +6,7 @@
 /*   By: vscabell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/12 11:01:45 by vscabell          #+#    #+#             */
-/*   Updated: 2020/02/19 10:57:37 by vscabell         ###   ########.fr       */
+/*   Updated: 2020/03/04 10:14:32 by vscabell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int main (void)
 	int ret;
 	char *line;
 
-	fd = open("1.txt", O_RDONLY);
+	fd = open("4.txt", O_RDONLY);
 	while ((ret = get_next_line(fd, &line)) == 1)
 		printf("%s\nreturn %i\n\n", line, ret);
 	if (ret == 0)
