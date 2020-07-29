@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vscabell <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: vscabell <vscabell@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/12 08:37:34 by vscabell          #+#    #+#             */
-/*   Updated: 2020/03/04 12:51:58 by vscabell         ###   ########.fr       */
+/*   Updated: 2020/07/29 18:49:13 by vscabell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	ft_breakline(char *str, char c)
+static int	ft_breakline(char *str, char c)
 {
 	int i;
 
@@ -24,7 +24,7 @@ int	ft_breakline(char *str, char c)
 	return (i);
 }
 
-int	ft_newline(char **str, char **line, int i, char *buffer)
+static int	ft_newline(char **str, char **line, int i, char *buffer)
 {
 	char *aux;
 
@@ -42,7 +42,7 @@ int	ft_newline(char **str, char **line, int i, char *buffer)
 	return (1);
 }
 
-int	ft_endoffile(char **str, char **line, char *buffer)
+static int	ft_endoffile(char **str, char **line, char *buffer)
 {
 	if (*str)
 	{
@@ -57,18 +57,13 @@ int	ft_endoffile(char **str, char **line, char *buffer)
 	return (0);
 }
 
-int	get_next_line(int fd, char **line)
+static int	ft_gnl(char **line, int fd, char *buffer)
 {
-	char		*buffer;
-	static char *str[OPEN_MAX];
-	int			ret;
+	static char	*str[OPEN_MAX];
 	char		*aux;
 	int			posit;
+	int			ret;
 
-	if (fd < 0 || !line || BUFFER_SIZE < 1 || read(fd, NULL, 0) < 0)
-		return (-1);
-	if (!(buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1))))
-		return (-1);
 	if (str[fd] && (posit = ft_breakline(str[fd], '\n')) != -1)
 		return (ft_newline(&str[fd], line, posit, buffer));
 	while ((ret = read(fd, buffer, BUFFER_SIZE)) > 0)
@@ -82,8 +77,19 @@ int	get_next_line(int fd, char **line)
 			free(str[fd]);
 			str[fd] = aux;
 		}
-		if ((posit = ft_breakline(str[fd], '\n')) != -1)
+		if ((posit = ft_breakline(str[fd], '\n')) >= 0)
 			return (ft_newline(&str[fd], line, posit, buffer));
 	}
 	return (ft_endoffile(&str[fd], line, buffer));
+}
+
+int			get_next_line(int fd, char **line)
+{
+	char	*buffer;
+
+	if (fd < 0 || !line || BUFFER_SIZE < 1 || read(fd, NULL, 0) < 0)
+		return (-1);
+	if (!(buffer = malloc((BUFFER_SIZE + 1) * sizeof(char *))))
+		return (-1);
+	return (ft_gnl(line, fd, buffer));
 }
